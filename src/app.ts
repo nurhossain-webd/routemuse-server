@@ -1,10 +1,35 @@
+import cors from "cors";
 import express from "express";
+import helmet from "helmet";
+import morgan from "morgan";
+
+import { env } from "./config/env.js";
+import { errorHandler } from "./middleware/error.middleware.js";
+import { apiRateLimiter } from "./middleware/rate-limit.middleware.js";
+import { notFoundHandler } from "./middleware/not-found.middleware.js";
+import { apiRouter } from "./routes/index.js";
 
 export const app = express();
 
 app.disable("x-powered-by");
-app.use(express.json({ limit: "1mb" }));
+app.use(helmet());
+app.use(
+  cors({
+    origin: env.CLIENT_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+app.use(express.json({ limit: env.JSON_BODY_LIMIT }));
+app.use(express.urlencoded({ extended: true, limit: env.JSON_BODY_LIMIT }));
 
-app.get("/health", (_request, response) => {
-  response.status(200).json({ status: "ok" });
-});
+if (env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+app.use("/api", apiRateLimiter);
+app.use("/api/v1", apiRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
