@@ -40,7 +40,7 @@ export const getExperiences: RequestHandler = async (request, response) => {
 export const getExperience: RequestHandler = async (request, response) => {
   const { slug } = slugParamsSchema.parse(request.params);
   const experience = await getPublishedExperienceBySlug(slug);
-  await recordInteraction(experience._id, "view");
+  await recordInteraction(experience._id, "view", request.user?._id);
   sendSuccess(response, { message: "Experience retrieved", data: { experience } });
 };
 

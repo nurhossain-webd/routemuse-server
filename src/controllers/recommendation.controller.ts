@@ -1,0 +1,10 @@
+import type { RequestHandler } from "express";
+import { recommendationService } from "../services/ai/recommendation.service.js";
+import { AppError } from "../utils/app-error.js";
+import { sendSuccess } from "../utils/api-response.js";
+import { preferencesSchema, recommendationExperienceParamsSchema, recommendationFeedbackSchema, recommendationRefinementSchema } from "../validations/recommendation.validation.js";
+const userId = (request: Express.Request) => { if (!request.user) throw new AppError("Authentication is required", 401); return request.user._id.toString(); };
+export const getRecommendations: RequestHandler = async (request, response) => { const result = await recommendationService.generate(userId(request)); sendSuccess(response, { message: "Recommendations generated", data: result }); };
+export const refineRecommendations: RequestHandler = async (request, response) => { const result = await recommendationService.generate(userId(request), recommendationRefinementSchema.parse(request.body)); sendSuccess(response, { message: "Recommendations refined", data: result }); };
+export const submitRecommendationFeedback: RequestHandler = async (request, response) => { const { experienceId } = recommendationExperienceParamsSchema.parse(request.params); const { value } = recommendationFeedbackSchema.parse(request.body); await recommendationService.feedback(userId(request), experienceId, value); sendSuccess(response, { message: "Feedback saved", data: null }); };
+export const updatePreferences: RequestHandler = async (request, response) => { const parsed = preferencesSchema.parse(request.body); const input = { preferredCategories: parsed.preferredCategories, preferredLocations: parsed.preferredLocations, ...(parsed.budgetMin !== undefined ? { budgetMin: parsed.budgetMin } : {}), ...(parsed.budgetMax !== undefined ? { budgetMax: parsed.budgetMax } : {}), ...(parsed.travelStyle !== undefined ? { travelStyle: parsed.travelStyle } : {}) }; const preferences = await recommendationService.updatePreferences(userId(request), input); sendSuccess(response, { message: "Travel preferences updated", data: { travelPreferences: preferences } }); };

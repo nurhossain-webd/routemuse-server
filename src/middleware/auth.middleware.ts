@@ -41,6 +41,20 @@ export const protect = asyncHandler(async (request, _response, next) => {
   }
 });
 
+export const identifyOptionalUser = asyncHandler(async (request, _response, next) => {
+  const authorization = request.get("authorization");
+  if (!authorization?.startsWith("Bearer ")) { next(); return; }
+  try {
+    const payload = verifyAccessToken(authorization.slice(7).trim());
+    const user = await UserModel.findById(payload.sub);
+    if (user) request.user = user;
+  } catch {
+    next();
+    return;
+  }
+  next();
+});
+
 export const restrictTo = (...roles: UserRole[]): RequestHandler =>
   (request, _response, next) => {
     if (!request.user) {

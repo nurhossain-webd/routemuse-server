@@ -12,7 +12,7 @@ import {
   remove,
   unfavorite,
 } from "../controllers/experience.controller.js";
-import { protect } from "../middleware/auth.middleware.js";
+import { identifyOptionalUser, protect } from "../middleware/auth.middleware.js";
 import { validateBody } from "../middleware/validate.middleware.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
@@ -26,7 +26,7 @@ experienceRouter.get("/", asyncHandler(getExperiences));
 experienceRouter.get("/mine", protect, asyncHandler(getMine));
 experienceRouter.get("/:slug/related", asyncHandler(getRelated));
 experienceRouter.get("/:experienceId/reviews", asyncHandler(getReviews));
-experienceRouter.get("/:slug", asyncHandler(getExperience));
+experienceRouter.get("/:slug", identifyOptionalUser, asyncHandler(getExperience));
 experienceRouter.post("/", protect, validateBody(createExperienceSchema), asyncHandler(create));
 experienceRouter.delete("/:id", protect, asyncHandler(remove));
 experienceRouter.post("/:id/favorite", protect, asyncHandler(favorite));
