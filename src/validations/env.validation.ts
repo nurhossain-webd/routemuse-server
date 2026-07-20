@@ -18,6 +18,10 @@ const environmentSchema = z.object({
     .default(604_800),
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
+  GROQ_API_KEY: z.string().min(1).optional(),
+  GROQ_MODEL: z.string().min(1).default("openai/gpt-oss-20b"),
+  AI_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(600_000),
+  AI_RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(10),
 });
 
 export type Environment = z.infer<typeof environmentSchema>;

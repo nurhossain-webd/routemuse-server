@@ -161,6 +161,26 @@ cleanup, and interaction persistence.
 | `npm run test:auth` | Run the authentication integration flow |
 | `npm run test:api` | Run the travel experience API integration flow |
 
+## AI Trip Planner
+
+Set `GROQ_API_KEY` in `.env` and optionally override `GROQ_MODEL` (the default is
+`openai/gpt-oss-20b`). The key is used only by the API server and must never use
+a `NEXT_PUBLIC_` prefix. AI planning has a separate configurable rate limit.
+
+Authenticated planner endpoints are:
+
+| Method and route | Description |
+| --- | --- |
+| `POST /api/v1/ai/trip-plans` | Retrieve matching experiences, generate, verify, and save a plan |
+| `POST /api/v1/ai/trip-plans/:id/refine` | Refine an owned plan and append conversation history |
+| `GET /api/v1/ai/trip-plans` | List the current user's saved plans |
+| `GET /api/v1/ai/trip-plans/:id` | Read an owned plan and its conversation |
+| `DELETE /api/v1/ai/trip-plans/:id` | Delete an owned plan and conversation |
+
+The provider adapter uses Groq's OpenAI-compatible structured-output API.
+Provider output is schema-validated and repaired once if invalid. Experience
+prices and the final total are verified in application code before persistence.
+
 ## Source structure
 
 ```text
@@ -168,13 +188,12 @@ src/
 ├── config/       # Environment and external-service configuration
 ├── controllers/  # HTTP request handlers
 ├── middleware/   # Express middleware and error boundaries
-├── models/       # Future Mongoose models
+├── models/       # Mongoose domain models
 ├── routes/       # Versioned route composition
-├── services/     # Future business logic and integrations
+├── services/     # Business logic, planner orchestration, and LLM adapters
 ├── types/        # Shared TypeScript contracts
 ├── utils/        # Reusable helpers and errors
 └── validations/  # Runtime input and environment schemas
 ```
 
-The authentication model is implemented. Experience and other domain models
-remain intentionally absent.
+Authentication, experience discovery, and AI trip planning models are implemented.

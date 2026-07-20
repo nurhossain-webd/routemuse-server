@@ -14,3 +14,16 @@ export const apiRateLimiter = rateLimit({
     });
   },
 });
+
+export const aiRateLimiter = rateLimit({
+  windowMs: env.AI_RATE_LIMIT_WINDOW_MS,
+  limit: env.AI_RATE_LIMIT_MAX_REQUESTS,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  handler: (_request, response, _next, options) => {
+    response.status(options.statusCode).json({
+      success: false,
+      message: "AI planning limit reached. Please wait before trying again.",
+    });
+  },
+});
