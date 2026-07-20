@@ -18,7 +18,12 @@ export const errorHandler: ErrorRequestHandler = (
     }
 
     if (error instanceof MongoServerError && error.code === 11_000) {
-      return new AppError("Email is already registered", 409);
+      return new AppError(
+        error.message.includes("email_1")
+          ? "Email is already registered"
+          : "A record with this unique value already exists",
+        409,
+      );
     }
 
     return new AppError("An unexpected error occurred", 500, false);

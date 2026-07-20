@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "seed:demo": "tsx src/scripts/seed-demo-user.ts",
-    "test:auth": "tsx src/scripts/auth-integration-test.ts"
+    "seed:experiences": "tsx src/scripts/seed-experiences.ts",
+    "test:auth": "tsx src/scripts/auth-integration-test.ts",
+    "test:api": "tsx src/scripts/experience-api-test.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -24,6 +26,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
     "morgan": "^1.11.0",
+    "sanitize-html": "^2.17.6",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -33,6 +36,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.10.1",
+    "@types/sanitize-html": "^2.16.1",
     "@types/supertest": "^7.2.1",
     "eslint": "^9.39.1",
     "supertest": "^7.2.2",

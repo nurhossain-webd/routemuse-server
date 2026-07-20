@@ -81,6 +81,49 @@ npm run seed:demo
 
 The command is idempotent and refreshes the configured demo user's password.
 
+## Travel experiences
+
+Public discovery routes:
+
+| Method and route | Description |
+| --- | --- |
+| `GET /api/v1/experiences` | Search, filter, sort, and paginate published experiences |
+| `GET /api/v1/experiences/:slug` | Retrieve a published experience |
+| `GET /api/v1/experiences/:slug/related` | Retrieve related published experiences |
+| `GET /api/v1/experiences/:experienceId/reviews` | Paginate experience reviews |
+
+The listing route accepts `search`, `category`, `country`, `location`,
+`minPrice`, `maxPrice`, `minRating`, `sort`, `page`, and `limit`. Sort values
+are `newest`, `price_asc`, `price_desc`, and `rating`; `limit` is capped at 100.
+
+Protected Bearer-token routes:
+
+| Method and route | Description |
+| --- | --- |
+| `POST /api/v1/experiences` | Create an experience |
+| `GET /api/v1/experiences/mine` | List the current user's experiences |
+| `DELETE /api/v1/experiences/:id` | Delete an owned experience; admins may delete any |
+| `POST /api/v1/experiences/:id/favorite` | Add a favorite |
+| `DELETE /api/v1/experiences/:id/favorite` | Remove a favorite |
+| `GET /api/v1/users/me/favorites` | List the current user's favorites |
+| `POST /api/v1/experiences/:id/reviews` | Submit one review per user and experience |
+
+All text inputs are schema-bounded and stripped of HTML. MongoDB uniqueness
+constraints protect slugs, favorites, and one-review-per-user rules against
+concurrent requests. Deleting an experience also removes its reviews,
+favorites, and interaction history.
+
+To load the 12 curated travel experiences, first create the demo user and then
+run the idempotent experience seed:
+
+```bash
+npm run seed:demo
+npm run seed:experiences
+```
+
+Seed images use stable Unsplash image URLs documented directly in
+`src/scripts/seed-experiences.ts`.
+
 ## Authentication integration test
 
 Set `TEST_MONGODB_URI` to a dedicated database whose name ends in `_test` or
@@ -94,6 +137,16 @@ The runnable integration test covers registration, normalized email, invalid
 password handling, login, Bearer authentication, `/me`, and password-hash
 redaction. It deletes its temporary user afterward.
 
+Run the experience API test against the same dedicated test database:
+
+```bash
+npm run test:api
+```
+
+It covers creation, search/filter/sort/pagination, detail and related reads,
+favorites, reviews and duplicate prevention, deletion authorization, cascade
+cleanup, and interaction persistence.
+
 ## Scripts
 
 | Command | Purpose |
@@ -104,7 +157,9 @@ redaction. It deletes its temporary user afterward.
 | `npm run build` | Compile TypeScript to `dist/` |
 | `npm start` | Run the compiled production server |
 | `npm run seed:demo` | Create or refresh the environment-configured demo user |
+| `npm run seed:experiences` | Upsert 12 curated travel experiences |
 | `npm run test:auth` | Run the authentication integration flow |
+| `npm run test:api` | Run the travel experience API integration flow |
 
 ## Source structure
 
