@@ -10,6 +10,14 @@ const environmentSchema = z.object({
   JSON_BODY_LIMIT: z.string().min(1).default("1mb"),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(900_000),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(100),
+  JWT_SECRET: z.string().min(32, "JWT_SECRET must contain at least 32 characters"),
+  JWT_EXPIRES_IN_SECONDS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(604_800),
+  BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
+  GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
 });
 
 export type Environment = z.infer<typeof environmentSchema>;
