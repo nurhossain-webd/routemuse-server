@@ -48,7 +48,8 @@ const seed = async (): Promise<void> => {
     if (index < reviews.length) {
       const review = await ReviewModel.findOne({ user: user._id, experience: experience._id });
       if (!review) {
-        await createReview(experience._id.toString(), user._id, reviews[index].rating, reviews[index].comment);
+        const reviewPayload = reviews[index]!;
+        await createReview(experience._id.toString(), user._id, reviewPayload.rating, reviewPayload.comment);
         console.log(`Created review for experience ${experience.slug}`);
       } else {
         console.log(`Review already exists for experience ${experience.slug}`);
