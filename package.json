@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "seed:demo": "tsx src/scripts/seed-demo-user.ts",
     "seed:experiences": "tsx src/scripts/seed-experiences.ts",
+    "seed:interactions": "tsx src/scripts/seed-interactions.ts",
     "test:auth": "tsx src/scripts/auth-integration-test.ts",
     "test:api": "tsx src/scripts/experience-api-test.ts"
   },
