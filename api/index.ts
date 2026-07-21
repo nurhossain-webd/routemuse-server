@@ -27,6 +27,5 @@ export default async function handler(req: IncomingMessage & { url?: string }, r
   }
 
   // Delegate to the Express app (Express app is a callable handler)
-  // @ts-expect-error - Express's request/response are compatible with Node's IncomingMessage/ServerResponse at runtime
   return app(req as any, res as any);
 }
