@@ -12,22 +12,56 @@ import { apiRouter } from "./routes/index.js";
 export const app = express();
 
 app.disable("x-powered-by");
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://routemuse-client.vercel.app",
+];
+
+if (env.CLIENT_URL) {
+  allowedOrigins.push(env.CLIENT_URL);
+}
+
 app.use(helmet());
+
 app.use(
   cors({
-    // If CLIENT_URL is set, restrict to that origin. Otherwise reflect request origin.
-    origin: env.CLIENT_URL ?? true,
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+app.options("*", cors());
+
 app.use(express.json({ limit: env.JSON_BODY_LIMIT }));
-app.use(express.urlencoded({ extended: true, limit: env.JSON_BODY_LIMIT }));
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: env.JSON_BODY_LIMIT,
+  }),
+);
 
 if (env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to the RouteMuse API",
+    healthCheck: "/api/v1/health",
+  });
+});
 
 app.use("/api", apiRateLimiter);
 app.use("/api/v1", apiRouter);
