@@ -68,6 +68,10 @@ app.get("/", (_req, res) => {
 
 app.use("/api", apiRateLimiter);
 app.use("/api/v1", apiRouter);
+// Also mount the API router at `/api` and root so requests forwarded
+// to the single Vercel function (or missing `/api/v1` prefix) still resolve.
+app.use("/api", apiRouter);
+app.use("/", apiRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
