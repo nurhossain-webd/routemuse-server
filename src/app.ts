@@ -40,8 +40,6 @@ app.use(
   }),
 );
 
-app.options("/*", cors());
-
 app.use(express.json({ limit: env.JSON_BODY_LIMIT }));
 
 app.use(
