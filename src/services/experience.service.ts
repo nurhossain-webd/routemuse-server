@@ -1,4 +1,3 @@
-import { MongoServerError } from "mongodb";
 import { type SortOrder, Types } from "mongoose";
 
 import {
@@ -155,7 +154,12 @@ export const addFavorite = async (
   try {
     await FavoriteModel.create({ user: userId, experience: experience._id });
   } catch (error: unknown) {
-    if (error instanceof MongoServerError && error.code === 11_000) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as any).code === 11_000
+    ) {
       throw new AppError("Experience is already in favorites", 409);
     }
     throw error;
@@ -208,7 +212,12 @@ export const createReview = async (
       comment,
     });
   } catch (error: unknown) {
-    if (error instanceof MongoServerError && error.code === 11_000) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as any).code === 11_000
+    ) {
       throw new AppError("You have already reviewed this experience", 409);
     }
     throw error;

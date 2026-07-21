@@ -1,5 +1,4 @@
 import type { ErrorRequestHandler } from "express";
-import { MongoServerError } from "mongodb";
 
 import { env } from "../config/env.js";
 import { AppError } from "../utils/app-error.js";
@@ -17,11 +16,16 @@ export const errorHandler: ErrorRequestHandler = (
       return error;
     }
 
-    if (error instanceof MongoServerError && error.code === 11_000) {
+    // Handle Mongo duplicate key errors without importing mongodb types.
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as any).code === 11_000
+    ) {
+      const msg = (error as any).message ?? "A record with this unique value already exists";
       return new AppError(
-        error.message.includes("email_1")
-          ? "Email is already registered"
-          : "A record with this unique value already exists",
+        msg.includes("email_1") ? "Email is already registered" : "A record with this unique value already exists",
         409,
       );
     }
