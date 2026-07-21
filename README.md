@@ -23,9 +23,11 @@ Production-oriented Express and TypeScript API foundation for RouteMuse AI.
    ```
 
 3. Update `MONGODB_URI`, `CLIENT_URL`, `JWT_SECRET`, and
-   `GOOGLE_CLIENT_ID` in `.env` for your environment. `JWT_SECRET` must contain
-   at least 32 characters. Create the Google client ID in Google Cloud Console
-   for the same browser application that obtains ID tokens.
+   `GOOGLE_CLIENT_ID` in `.env` for your environment. `MONGODB_URI` may be a
+   local MongoDB connection string or a MongoDB Atlas `mongodb+srv://...`
+   URI. `JWT_SECRET` must contain at least 32 characters. Create the Google
+   client ID in Google Cloud Console for the same browser application that
+   obtains ID tokens.
 
 4. Start the development server:
 
@@ -44,13 +46,13 @@ GET http://localhost:4000/api/v1/health
 All responses use `{ "success", "message", "data" }` for success and
 `{ "success", "message", "errors?" }` for errors.
 
-| Method and route | Description | Authentication |
-| --- | --- | --- |
-| `POST /api/v1/auth/register` | Create a local account | Public |
-| `POST /api/v1/auth/login` | Sign in with email and password | Public |
-| `POST /api/v1/auth/google` | Exchange a Google ID token | Public |
-| `GET /api/v1/auth/me` | Return the current user | Bearer token |
-| `POST /api/v1/auth/logout` | Confirm client-side logout | Bearer token |
+| Method and route             | Description                     | Authentication |
+| ---------------------------- | ------------------------------- | -------------- |
+| `POST /api/v1/auth/register` | Create a local account          | Public         |
+| `POST /api/v1/auth/login`    | Sign in with email and password | Public         |
+| `POST /api/v1/auth/google`   | Exchange a Google ID token      | Public         |
+| `GET /api/v1/auth/me`        | Return the current user         | Bearer token   |
+| `POST /api/v1/auth/logout`   | Confirm client-side logout      | Bearer token   |
 
 Send protected requests with:
 
@@ -85,12 +87,12 @@ The command is idempotent and refreshes the configured demo user's password.
 
 Public discovery routes:
 
-| Method and route | Description |
-| --- | --- |
-| `GET /api/v1/experiences` | Search, filter, sort, and paginate published experiences |
-| `GET /api/v1/experiences/:slug` | Retrieve a published experience |
-| `GET /api/v1/experiences/:slug/related` | Retrieve related published experiences |
-| `GET /api/v1/experiences/:experienceId/reviews` | Paginate experience reviews |
+| Method and route                                | Description                                              |
+| ----------------------------------------------- | -------------------------------------------------------- |
+| `GET /api/v1/experiences`                       | Search, filter, sort, and paginate published experiences |
+| `GET /api/v1/experiences/:slug`                 | Retrieve a published experience                          |
+| `GET /api/v1/experiences/:slug/related`         | Retrieve related published experiences                   |
+| `GET /api/v1/experiences/:experienceId/reviews` | Paginate experience reviews                              |
 
 The listing route accepts `search`, `category`, `country`, `location`,
 `minPrice`, `maxPrice`, `minRating`, `sort`, `page`, and `limit`. Sort values
@@ -98,15 +100,15 @@ are `newest`, `price_asc`, `price_desc`, and `rating`; `limit` is capped at 100.
 
 Protected Bearer-token routes:
 
-| Method and route | Description |
-| --- | --- |
-| `POST /api/v1/experiences` | Create an experience |
-| `GET /api/v1/experiences/mine` | List the current user's experiences |
-| `DELETE /api/v1/experiences/:id` | Delete an owned experience; admins may delete any |
-| `POST /api/v1/experiences/:id/favorite` | Add a favorite |
-| `DELETE /api/v1/experiences/:id/favorite` | Remove a favorite |
-| `GET /api/v1/users/me/favorites` | List the current user's favorites |
-| `POST /api/v1/experiences/:id/reviews` | Submit one review per user and experience |
+| Method and route                          | Description                                       |
+| ----------------------------------------- | ------------------------------------------------- |
+| `POST /api/v1/experiences`                | Create an experience                              |
+| `GET /api/v1/experiences/mine`            | List the current user's experiences               |
+| `DELETE /api/v1/experiences/:id`          | Delete an owned experience; admins may delete any |
+| `POST /api/v1/experiences/:id/favorite`   | Add a favorite                                    |
+| `DELETE /api/v1/experiences/:id/favorite` | Remove a favorite                                 |
+| `GET /api/v1/users/me/favorites`          | List the current user's favorites                 |
+| `POST /api/v1/experiences/:id/reviews`    | Submit one review per user and experience         |
 
 All text inputs are schema-bounded and stripped of HTML. MongoDB uniqueness
 constraints protect slugs, favorites, and one-review-per-user rules against
@@ -149,17 +151,17 @@ cleanup, and interaction persistence.
 
 ## Scripts
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Run the API with `tsx` watch mode |
-| `npm run typecheck` | Check TypeScript without emitting files |
-| `npm run lint` | Run ESLint |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm start` | Run the compiled production server |
-| `npm run seed:demo` | Create or refresh the environment-configured demo user |
-| `npm run seed:experiences` | Upsert 12 curated travel experiences |
-| `npm run test:auth` | Run the authentication integration flow |
-| `npm run test:api` | Run the travel experience API integration flow |
+| Command                    | Purpose                                                |
+| -------------------------- | ------------------------------------------------------ |
+| `npm run dev`              | Run the API with `tsx` watch mode                      |
+| `npm run typecheck`        | Check TypeScript without emitting files                |
+| `npm run lint`             | Run ESLint                                             |
+| `npm run build`            | Compile TypeScript to `dist/`                          |
+| `npm start`                | Run the compiled production server                     |
+| `npm run seed:demo`        | Create or refresh the environment-configured demo user |
+| `npm run seed:experiences` | Upsert 12 curated travel experiences                   |
+| `npm run test:auth`        | Run the authentication integration flow                |
+| `npm run test:api`         | Run the travel experience API integration flow         |
 
 ## AI Trip Planner
 
@@ -169,13 +171,13 @@ a `NEXT_PUBLIC_` prefix. AI planning has a separate configurable rate limit.
 
 Authenticated planner endpoints are:
 
-| Method and route | Description |
-| --- | --- |
-| `POST /api/v1/ai/trip-plans` | Retrieve matching experiences, generate, verify, and save a plan |
-| `POST /api/v1/ai/trip-plans/:id/refine` | Refine an owned plan and append conversation history |
-| `GET /api/v1/ai/trip-plans` | List the current user's saved plans |
-| `GET /api/v1/ai/trip-plans/:id` | Read an owned plan and its conversation |
-| `DELETE /api/v1/ai/trip-plans/:id` | Delete an owned plan and conversation |
+| Method and route                        | Description                                                      |
+| --------------------------------------- | ---------------------------------------------------------------- |
+| `POST /api/v1/ai/trip-plans`            | Retrieve matching experiences, generate, verify, and save a plan |
+| `POST /api/v1/ai/trip-plans/:id/refine` | Refine an owned plan and append conversation history             |
+| `GET /api/v1/ai/trip-plans`             | List the current user's saved plans                              |
+| `GET /api/v1/ai/trip-plans/:id`         | Read an owned plan and its conversation                          |
+| `DELETE /api/v1/ai/trip-plans/:id`      | Delete an owned plan and conversation                            |
 
 The provider adapter uses Groq's OpenAI-compatible structured-output API.
 Provider output is schema-validated and repaired once if invalid. Experience
