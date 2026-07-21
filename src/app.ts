@@ -22,7 +22,12 @@ if (env.CLIENT_URL) {
   allowedOrigins.push(env.CLIENT_URL);
 }
 
-app.use(helmet());
+// Configure Helmet but allow popups to use window.postMessage (Google OAuth)
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  }),
+);
 
 app.use(
   cors({
